@@ -7,7 +7,7 @@ Results Blablabla
 ## Fit setup and data pre-processing
 Two thing have to be done before fitting the distance ladder:
 * Modify the `Fit_parameters.py` in order to choose what you want to include in your fit you want.
-* Include your data in the `/Data` folder. According to your needs the following .csv have to be in this folder:
+* Include your data in the `/Data` folder. According to your needs the following `.csv` have to be in this folder:
   * `/Data/Cepheids.csv` containing the data from Cepheids in SN-host galaxies.
   * `/Data/Cepheids_MW.csv` containing the data from the MW-Cepheids.
   * `/Data/Cepheids_anchors.csv` containing the data from the Cepheids in anchor galaxies.
@@ -18,7 +18,9 @@ Two thing have to be done before fitting the distance ladder:
   * `/Data/SNe_Hubble.csv` containing the data from high-z SNe for the redshift-magnitude diagram.
 
 ### Cepheids Data 
-The .csv have to be in a specific form in order to run the code. For the **Cepheids** the columns have to be in that order:
+The `.csv` have to be in a specific form in order to run the code. The columns name are not revelant but their order is.
+
+For the `/Data/Cepheids.csv`the columns have to be in that order:
 1. Galaxy host
 2. log10 of the pulsation period
 3. Wesenheit magnitude
@@ -26,35 +28,53 @@ The .csv have to be in a specific form in order to run the code. For the **Cephe
 5. Metallicity [Fe/H] or [O/H] (it has to be consistent between all cepheids
 6. Redshift
 
-    Additionally, for the `/Data/Cepheids_MW.csv`:
+For the `/Data/Cepheids_MW.csv`:
+1. Galaxy host
+2. log10 of the pulsation period
+3. Wesenheit magnitude
+4. Uncertainty of the Wesenheit magnitude
+5. Metallicity [Fe/H] or [O/H] (it has to be consistent between all cepheids
+6. Redshift
 7. Parallax
 8. Uncertainty of the parallax
 
-    And for the `/Data/Cepheids_anchors.csv`:
+For the `/Data/Cepheids_anchors.csv`:
+1. Galaxy host
+2. log10 of the pulsation period
+3. Wesenheit magnitude
+4. Uncertainty of the Wesenheit magnitude
+5. Metallicity [Fe/H] or [O/H] (it has to be consistent between all cepheids
+6. Redshift
 7. Geometric distance modulus of the anchor galaxy
 8. Uncertainty of the geometric distance modulus
 
 
 ### TRGB Data 
-For the *TRGB*, the columns have to be in that order:
-1) Galaxy host
-2) Observed I-band magnitude of the TRGB
-3) Uncertainty of the observed I-band magnitude
-4) Absorbtion in the I-band
-5) Redshift of the host galaxy
-6) A color term V-I
+For the `/Data/TRGB.csv`:
+1. Galaxy host 
+2. Observed I-band magnitude of the TRGB
+3. Uncertainty of the observed I-band magnitude
+4. Absorbtion in the I-band
+5. Redshift of the host galaxy
+6. A color term V-I
 
-Additionally, for the `/Data/TRGB_anchors.csv`:
-7) Geometric distance modulus of the anchor galaxy
-8) Uncertainty of the geometric distance modulus
+For the `/Data/TRGB_anchors.csv`:
+1. Galaxy host 
+2. Observed I-band magnitude of the TRGB
+3. Uncertainty of the observed I-band magnitude
+4. Absorbtion in the I-band
+5. Redshift of the host galaxy
+6. A color term V-I
+7. Geometric distance modulus of the anchor galaxy
+8. Uncertainty of the geometric distance modulus
 
 ### SNe Data
-For the *SN*, the columns have to be in tha order:
+For the `/Data/SNe_Cepheids.csv` and `/Data/SNe_TRGB.csv`.
 1) Galaxy host
 2) Apparent B peak magnitude
 3) Uncertainty of the apparent B peak magnitude
 
-The columns are different for the `SNe_Hubble.csv`:
+For the `/Data/SNe_Hubble.csv`:
 1) SN name
 2) Apparent B peak magnitude
 3) Uncertainty of the apparent B peak magnitude

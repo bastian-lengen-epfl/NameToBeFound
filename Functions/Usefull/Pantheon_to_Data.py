@@ -4,10 +4,8 @@ Pantheon   -> `/Data/SNe_Hubble.csv`
 """
 import os
 import argparse as ap
-import numpy as np
 import pandas as pd
-from astropy.io import fits
-from astropy.table import Table
+
 
 def main(SNe_pantheon, work_dir='./'):
     Data_dir = work_dir + 'Data/'

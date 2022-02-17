@@ -13,6 +13,10 @@ from astropy.table import Table
 def main(TRGB_SNe_Anand, work_dir='./'):
     Data_dir = work_dir + 'Data/'
 
+    # Values used
+    mu_N4258 = 29.397
+    sig_mu_N4258 = 0.032
+
     # Start with the TRGB dataframe
     TRGB = pd.DataFrame()
     SN = pd.DataFrame()
@@ -39,6 +43,8 @@ def main(TRGB_SNe_Anand, work_dir='./'):
     for i in TRGB.index:
         TRGB.loc[i, 'z'] = z_dict[TRGB.loc[i, 'Gal']]
     TRGB_anchors = TRGB[TRGB['Gal'] == 'N4258'].reset_index(drop=True)
+    TRGB_anchors['mu'] = mu_N4258
+    TRGB_anchors['sig_mu'] = sig_mu_N4258
     TRGB = TRGB[~(TRGB['Gal'] == 'N4258')].reset_index(drop=True)
 
     # And the SNe
