@@ -25,7 +25,7 @@ def main(Cepheids_R16, SNe_R16, Cepheids_LMC_R19, Cepheids_MW_R21, work_dir='./'
     sig_aB_R16 = 0.00176
 
     # Redshift list Anderson 2019
-    z_dict = {'MW':0, 'LMC':0.92, 'N4258':1.49, 'M101 ':0.80, 'N1015':8.77, 'N1309':7.12, 'N1365':5.45, \
+    z_dict = {'MW':0, 'LMC':0.92, 'N4258':1.49, 'M101':0.80, 'N1015':8.77, 'N1309':7.12, 'N1365':5.45, \
               'N1448':3.90, 'N2442':4.89, 'N3021':5.14, 'N3370':4.27, 'N3447':3.56, 'N3972':2.84, \
               'N3982': 3.70, 'N4038':5.48, 'N4424':1.46, 'N4536':6.03, 'N4639':3.40, 'N5584':5.46, \
               'N5917':6.35, 'N7250': 3.89, 'U9391': 6.38}
@@ -46,6 +46,7 @@ def main(Cepheids_R16, SNe_R16, Cepheids_LMC_R19, Cepheids_MW_R21, work_dir='./'
     Cepheids['sig_mW'] = tmp['sigTot']
     Cepheids['O/H'] = tmp['[O/H]']
     Cepheids = Cepheids[~(Cepheids['Gal'] == 'M31  ')].reset_index(drop=True) #Drop M31
+    Cepheids['Gal'][Cepheids['Gal'] == 'M101 '] = 'M101' #Rename 'M101 ' to 'M101'
     for i in Cepheids.index:
         Cepheids.loc[i, 'z'] = z_dict[Cepheids.loc[i, 'Gal']]*1e-3
     Cepheids_anchors = Cepheids[Cepheids['Gal'] == 'N4258'].reset_index(drop=True)
@@ -82,6 +83,7 @@ def main(Cepheids_R16, SNe_R16, Cepheids_LMC_R19, Cepheids_MW_R21, work_dir='./'
     else:
         print(f'ERROR: The file {Cepheids_MW_R21} must be either a .csv or .fits')
         return 0
+    tmp = tmp[tmp['pi_EDR3'] != '⋯'].reset_index(drop=True) # Remove the Cepheids with no parallax
     Cepheids_MW = pd.DataFrame()
     Cepheids_MW['Gal'] = ['MW'] * len(tmp)
     Cepheids_MW['logP'] = tmp['logP']
@@ -89,8 +91,8 @@ def main(Cepheids_R16, SNe_R16, Cepheids_LMC_R19, Cepheids_MW_R21, work_dir='./'
     Cepheids_MW['sig_mW'] = tmp['sig_m_W']
     Cepheids_MW['Fe/H'] = tmp['[Fe/H]']
     Cepheids_MW['z'] = z_dict['MW']
-    Cepheids_MW['pi'] = tmp['pi_EDR3']
-    Cepheids_MW['sig_pi'] = tmp['sig_pi_EDR3']
+    Cepheids_MW['pi'] = list(map(float,tmp['pi_EDR3'])) # Also convert str -> float
+    Cepheids_MW['sig_pi'] = list(map(float, tmp['sig_pi_EDR3'])) # Idem
 
     # R16 SNe
     if SNe_R16[-4:]=='.csv':
