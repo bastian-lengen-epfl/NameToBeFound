@@ -5,16 +5,16 @@ N_anchors_Cep = 2           # Number of anchors
 include_MW = True           # Considers the MW-Cepheids and their GAIA parallax
 fixed_zp = False            # False -> Fit for the GAIA zp
 zp = 0.14                   # GAIA zp in μas, ONLY IF fixed_zp = True
-sig_zp = 0.05		    # zp uncertainty, ONLY IF fixed_zp = True
+sig_zp = 0.05		        # zp uncertainty, ONLY IF fixed_zp = True
 fixed_Zw = False            # False -> Fit for the metallicity effect on the PLR
 Zw = 0                      # Slope of the metallicity effect on the PLR ONLY IF fixed_Zw = True
-sig_Zw = 0		    # Zw uncertainty, ONLY IF fixed_Zw = True
+sig_Zw = 0		            # Zw uncertainty, ONLY IF fixed_Zw = True
 PLR_break = False           # Allows for a break in the PLR at P=10d
 break_P = 10                # Period of the PLR-break ONLY IF PLR_break = True
-added_scatter = 0.0682      # Add dispersion to the Cepheids (0.0682 in Moertsell et al. 2021)
+added_scatter = 0           # Add dispersion to the Cepheids (0.0682 in Moertsell et al. 2021)
 outlier_rejection = True    # 2.7-clipping process
-RLB_correction = True       # Correct for the RLB (Anderson 2019)
-Kcorr_Cep = False           # Correct for the K-corrections (Anderson 2021)
+RLB_correction = False       # Correct for the RLB (Anderson 2019)
+Kcorr_Cep = True           # Correct for the K-corrections (Anderson 2021)
 
 
 ### TRGB
@@ -36,8 +36,6 @@ a_B = 0.715840              # Value for the Hubble diagram's intercept ONLY IF f
 sig_a_B = 0.001631          # 0.71273 +/- 0.00176 Riess 2016, OR can be fitted
 z_min = 0.023               # Min redshift to consider when fitting for a_B
 z_max = 0.150               # Max redshift to consider when fitting for a_B
-### Wesenheit
-R = 0.386
 
 ### Physics constants
 c = 299792.458              # km/s

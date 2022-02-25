@@ -16,7 +16,8 @@ def main(Cepheids_R16, SNe_R16, Cepheids_LMC_R19, Cepheids_MW_R21, work_dir='./'
     Data_dir = work_dir + 'Data/'
 
     # Values used
-    R = 0.386
+    R = 0.386               # Wesenheit
+    Z_sun = 8.824           # Z_sun allows to convert 12+log(O/H) from R16 to [O/H]
     mu_N4258 = 29.397
     sig_mu_N4258 = 0.032
     mu_LMC = 18.477
@@ -28,7 +29,7 @@ def main(Cepheids_R16, SNe_R16, Cepheids_LMC_R19, Cepheids_MW_R21, work_dir='./'
     z_dict = {'MW':0, 'LMC':0.92, 'N4258':1.49, 'M101':0.80, 'N1015':8.77, 'N1309':7.12, 'N1365':5.45, \
               'N1448':3.90, 'N2442':4.89, 'N3021':5.14, 'N3370':4.27, 'N3447':3.56, 'N3972':2.84, \
               'N3982': 3.70, 'N4038':5.48, 'N4424':1.46, 'N4536':6.03, 'N4639':3.40, 'N5584':5.46, \
-              'N5917':6.35, 'N7250': 3.89, 'U9391': 6.38}
+              'N5917':6.35, 'N7250': 3.89, 'U9391': 6.38, 'M31': -1.00}
 
     # Start with the R16 Cepheids
     if Cepheids_R16[-4:]=='.csv':
@@ -44,11 +45,13 @@ def main(Cepheids_R16, SNe_R16, Cepheids_LMC_R19, Cepheids_MW_R21, work_dir='./'
     Cepheids['logP'] = np.log10(tmp['Per'])
     Cepheids['mW'] = tmp['F160W'] - R * tmp['V-I']
     Cepheids['sig_mW'] = tmp['sigTot']
-    Cepheids['O/H'] = tmp['[O/H]']
-    Cepheids = Cepheids[~(Cepheids['Gal'] == 'M31  ')].reset_index(drop=True) #Drop M31
+    Cepheids['O/H'] = tmp['[O/H]']-Z_sun
     Cepheids['Gal'][Cepheids['Gal'] == 'M101 '] = 'M101' #Rename 'M101 ' to 'M101'
+    Cepheids['Gal'][Cepheids['Gal'] == 'M31  '] = 'M31'  # Rename 'M31  ' to 'M31'
     for i in Cepheids.index:
         Cepheids.loc[i, 'z'] = z_dict[Cepheids.loc[i, 'Gal']]*1e-3
+    Cepheids['V-I'] = tmp['V-I']
+    Cepheids = Cepheids[~(Cepheids['Gal'] == 'M31  ')].reset_index(drop=True)  # Drop M31
     Cepheids_anchors = Cepheids[Cepheids['Gal'] == 'N4258'].reset_index(drop=True)
     Cepheids_anchors['mu'] = mu_N4258
     Cepheids_anchors['sig_mu'] = sig_mu_N4258
@@ -69,7 +72,8 @@ def main(Cepheids_R16, SNe_R16, Cepheids_LMC_R19, Cepheids_MW_R21, work_dir='./'
     to_add['mW'] = tmp['mWH']
     to_add['sig_mW'] = tmp['e_mWH']
     to_add['O/H'] = -0.30
-    to_add['z'] = z_dict['LMC']
+    to_add['z'] = z_dict['LMC']*1e-3
+    to_add['V-I'] = tmp['F555Wmag']-tmp['F814Wmag']
     to_add['mu'] = mu_LMC
     to_add['sig_mu'] = sig_mu_LMC
     Cepheids_anchors = pd.concat([Cepheids_anchors, to_add], ignore_index=True, sort=False)
@@ -91,6 +95,7 @@ def main(Cepheids_R16, SNe_R16, Cepheids_LMC_R19, Cepheids_MW_R21, work_dir='./'
     Cepheids_MW['sig_mW'] = tmp['sig_m_W']
     Cepheids_MW['Fe/H'] = tmp['[Fe/H]']
     Cepheids_MW['z'] = z_dict['MW']
+    Cepheids_MW['V-I'] = tmp['V']-tmp['I']
     Cepheids_MW['pi'] = list(map(float,tmp['pi_EDR3'])) # Also convert str -> float
     Cepheids_MW['sig_pi'] = list(map(float, tmp['sig_pi_EDR3'])) # Idem
 

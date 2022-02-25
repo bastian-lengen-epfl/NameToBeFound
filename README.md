@@ -27,6 +27,7 @@ For the `/Data/Cepheids.csv`the columns have to be in that order:
 4. Uncertainty of the Wesenheit magnitude
 5. Metallicity [Fe/H] or [O/H] (it has to be consistent between all cepheids
 6. Redshift
+7. Color term V-I, only used for K-corrections, can be a column full of NaN if not necessary
 
 For the `/Data/Cepheids_MW.csv`:
 1. Galaxy host
@@ -35,8 +36,9 @@ For the `/Data/Cepheids_MW.csv`:
 4. Uncertainty of the Wesenheit magnitude
 5. Metallicity [Fe/H] or [O/H] (it has to be consistent between all cepheids
 6. Redshift
-7. Parallax
-8. Uncertainty of the parallax
+7. Color term V-I, only used for K-corrections, can be a column full of NaN if not necessary
+8. Parallax
+9. Uncertainty of the parallax
 
 For the `/Data/Cepheids_anchors.csv`:
 1. Galaxy host
@@ -45,8 +47,9 @@ For the `/Data/Cepheids_anchors.csv`:
 4. Uncertainty of the Wesenheit magnitude
 5. Metallicity [Fe/H] or [O/H] (it has to be consistent between all cepheids
 6. Redshift
-7. Geometric distance modulus of the anchor galaxy
-8. Uncertainty of the geometric distance modulus
+7. Color term V-I, only used for K-corrections, can be a column full of NaN if not necessary
+8. Geometric distance modulus of the anchor galaxy
+9. Uncertainty of the geometric distance modulus
 
 
 ### TRGB Data 
