@@ -16,8 +16,7 @@ def fit_distance_ladder(DF_dict):
 
     ### Useful functions
     def logczexpansion(z):
-        return np.log10(
-            Fp.c * z * (1 + 1 / 2 * (1 - Fp.q0) * z - 1 / 6 * (1 - Fp.q0 - 3 * Fp.q0 ** 2 + Fp.j0) * z ** 2))
+        return np.log10(Fp.c * z * (1 + 1 / 2 * (1 - Fp.q0) * z - 1 / 6 * (1 - Fp.q0 - 3 * Fp.q0 ** 2 + Fp.j0) * z ** 2))
 
     ### We first create an empty signal vector y, design matrix L and parameters vector q and diag (for Sigma)
     [y, L, diag] = 3 * [np.empty(0)]
@@ -30,15 +29,13 @@ def fit_distance_ladder(DF_dict):
         Cepheids = DF_dict['Cepheids']
         galaxies_Cep = Cepheids['Gal'].drop_duplicates().reset_index(drop=True)  # List of Cepheids-host galaxy
         if len(galaxies_Cep) != Fp.N_galaxies_Cep:
-            print('ERROR: make sure that the value for N_galaxies_Cep in the Fit_parameters.py corresponds to \
-                   the number of the galaxy in the Cepheids.csv file!')
+            print('ERROR: make sure that the value for N_galaxies_Cep in the Fit_parameters.py corresponds to the number of the galaxy in the Cepheids.csv file!')
             return
         # The anchors Cepheids
         Cepheids_anchors = DF_dict['Cepheids_anchors']
         anchors_Cep = Cepheids_anchors['Gal'].drop_duplicates().reset_index(drop=True)  # List of Cepheids-host galaxy
         if len(anchors_Cep) != Fp.N_anchors_Cep:
-            print('ERROR: make sure that the value for N_anchors_Cep in the Fit_parameters.py corresponds to \
-                   the number of the galaxy in the Cepheids_anchors.csv file!')
+            print('ERROR: make sure that the value for N_anchors_Cep in the Fit_parameters.py corresponds to the number of the galaxy in the Cepheids_anchors.csv file!')
             return
         # The MW Cepheids
         if Fp.include_MW == True:
@@ -75,7 +72,7 @@ def fit_distance_ladder(DF_dict):
                 y = np.append(y, Cepheids_MW['mW'] \
                               - 10 + 5 * np.log10(Cepheids_MW['pi']))
                 err = (Cepheids_MW['sig_mW'] + Fp.added_scatter) ** 2 \
-                      + ((5 / np.log(10) / Cepheids_MW['pi'] * Cepheids_MW['sig_pi'])) ** 2
+                      + (5 / np.log(10) / Cepheids_MW['pi'] * Cepheids_MW['sig_pi']) ** 2
                 diag = np.append(diag, err)
         # Put Zw [M/H] on the signal side (y) if fixed Zw
         if Fp.fixed_Zw == True:
@@ -130,7 +127,7 @@ def fit_distance_ladder(DF_dict):
                     index = q_string.index('b_s')
                 else:
                     index = q_string.index('b_l')
-            L[i + index_offset, index] = Cepheids.loc[i, 'logP']
+            L[i + index_offset, index] = Cepheids.loc[i, 'logP']-np.log10(Fp.break_P)
             #  Zw
             if Fp.fixed_Zw == False:
                 index = q_string.index('Zw')
@@ -154,7 +151,7 @@ def fit_distance_ladder(DF_dict):
                     index = q_string.index('b_s')
                 else:
                     index = q_string.index('b_l')
-            L[i + index_offset, index] = Cepheids_anchors.loc[i, 'logP']
+            L[i + index_offset, index] = Cepheids_anchors.loc[i, 'logP']-np.log10(Fp.break_P)
             #  Zw
             if Fp.fixed_Zw == False:
                 index = q_string.index('Zw')
@@ -182,7 +179,7 @@ def fit_distance_ladder(DF_dict):
                         index = q_string.index('b_s')
                     else:
                         index = q_string.index('b_l')
-                L[i + index_offset, index] = Cepheids_MW.loc[i, 'logP']
+                L[i + index_offset, index] = Cepheids_MW.loc[i, 'logP']-np.log10(Fp.break_P)
                 #  Zw
                 if Fp.fixed_Zw == False:
                     index = q_string.index('Zw')
@@ -264,8 +261,6 @@ def fit_distance_ladder(DF_dict):
                 if gal not in list(anchors_TRGB):
                     q_string.append(f'Dmu_{gal}')
             q_string.append('MTRGB')
-            if Fp.different_MB == True:
-                q_string.append('DMB')
 
         ### Complete L
         to_add = np.zeros([len(TRGB) + len(TRGB_anchors) + Fp.N_anchors_TRGB + len(SNe_TRGB), len(q_string)])
@@ -353,6 +348,7 @@ def fit_distance_ladder(DF_dict):
                     to_add[i + index_offset, index] = 1
                     if Fp.different_mu == True:
                         index = q_string.index(f'Dmu_{gal}')
+                        to_add[i + index_offset, index] = 1
                 else:
                     index = q_string.index(f'mu_{gal}')
                     to_add[i + index_offset, index] = 1
@@ -373,7 +369,7 @@ def fit_distance_ladder(DF_dict):
 
         ### Complete y
         y = np.append(y, SNe_Hubble['mB'] - 5 * logczexpansion(SNe_Hubble['z']) - 25)
-        err = SNe_Hubble['mB'] ** 2
+        err = SNe_Hubble['sig_mB'] ** 2
         diag = np.append(diag, err)
 
         ### Complete q
@@ -394,12 +390,36 @@ def fit_distance_ladder(DF_dict):
     C = np.diag(diag)
     LT = np.transpose(L)
     C1 = np.linalg.inv(C)
-    cov = np.linalg.inv(np.matmul(np.matmul(LT, C1), L))
-    q = np.matmul(np.matmul(np.matmul(cov, LT), C1), y)
+    Sigma2 = np.linalg.inv(np.matmul(np.matmul(LT, C1), L))
+    q = np.matmul(np.matmul(np.matmul(Sigma2, LT), C1), y)
     chi2 = np.matmul(np.matmul(np.transpose(y - np.matmul(L, q)), C1), y - np.matmul(L, q))
     dof = len(y) - len(q)
     chi2_reduced = chi2 / dof
 
-    q_dict = dict(zip(q_string, q))
-    return y, q_dict, L, chi2_reduced
+    # The q_dict now contains string name, q estimate, q uncertainty of the estimate
+    sigma = np.sqrt(np.diag(Sigma2))
+    q_dict = dict(zip(q_string, np.transpose([q,sigma])))
+
+    # Complete the q_dict with H0 and the chi2_reduced
+    ### Comlete the results
+    # Compute the final value for H0 and add it to q_dict
+    print('Computing H0...')
+    if Fp.fit_aB == True:
+        # finale value for H0 and
+        [x, dx] = q_dict['5logH0']
+        H0 = 10 ** (x / 5)
+        sig_H0 = H0 * np.log(10) / 5 * dx
+        q_dict['H0'] = [H0, sig_H0]
+    else:
+        # Compute H0 with the a_B from the Fit_parameters.py file
+        [MB, sig_MB] = q_dict['MB']
+        logH0 = 0.2 * MB + Fp.aB + 5
+        sig_logH0 = np.sqrt((0.2 * sig_MB) ** 2 + Fp.sig_aB ** 2)
+        H0 = 10 ** logH0
+        sig_H0 = H0 * np.log(10) * sig_logH0
+        q_dict['H0'] = [H0, sig_H0]
+    # Add the chi2/dof
+    q_dict['chi2/dof'] = [chi2_reduced, 0]
+
+    return y, q_dict, L
 

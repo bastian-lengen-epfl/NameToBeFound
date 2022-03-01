@@ -30,12 +30,12 @@ For the `/Data/Cepheids.csv`the columns have to be in that order:
 7. Color term V-I, only used for K-corrections, can be a column full of NaN if not necessary
 
 For the `/Data/Cepheids_MW.csv`:
-1. Galaxy host
+1. Galaxy host (Here gal='MW')
 2. log10 of the pulsation period
 3. Wesenheit magnitude
 4. Uncertainty of the Wesenheit magnitude
 5. Metallicity [Fe/H] or [O/H] (it has to be consistent between all cepheids
-6. Redshift
+6. Redshift (Here z=0)
 7. Color term V-I, only used for K-corrections, can be a column full of NaN if not necessary
 8. Parallax
 9. Uncertainty of the parallax

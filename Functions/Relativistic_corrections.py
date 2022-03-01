@@ -8,7 +8,7 @@ import Fit_parameters as Fp
 def RLB_correction(DF_dict):
     '''
     Return the corrected the DF_dict for the Redshift Leavitt Bias (RLB) following the methodology from
-    Anderson (2019)
+    Anderson (2019) for Cepheids
 
     :type   DF_dict: dictionary of pandas DataFrame
     :param  DF_dict: Dictionary that contains the DataFrame that will be fitted.
@@ -21,13 +21,9 @@ def RLB_correction(DF_dict):
 
     return DF_dict
 
-
-import numpy as np
-
-
 def K_corr_Cep(DF_dict, filter='W'):
     '''
-    Return the corrected the DF_dict for the K-correctionsfollowing the methodology from Anderson (2021)
+    Return the corrected the DF_dict for the Cepheids K-corrections following the methodology from Anderson (2021)
 
     :type   DF_dict: dictionary of pandas DataFrame
     :param  DF_dict: Dictionary that contains the DataFrame that will be fitted.
@@ -81,29 +77,63 @@ def K_corr_Cep(DF_dict, filter='W'):
         m_ref = np.array([-1.18, -3.53, -6.04, -10.10, -14.38]) * 1e-3
         c_ref = np.array([1.00, 1.93, 3.19, 5.69, 8.28]) * 1e-3
     else:
-        print('Error, choose a filter in which the K-corrections is available !')
+        print('Error, choose a filter in which the Cepheids K-corrections is available !')
 
     # Load the different DataFrames
     Cepheids = DF_dict['Cepheids']
     Cepheids_anchors = DF_dict['Cepheids_anchors']
 
     # Correct each DataFrame for it
-    for i in range(len(Cepheids)):
+    for i in Cepheids.index:
         m, c = interpolate(Cepheids.loc[i, 'z'], z_ref, m_ref, c_ref)
-        Cepheids.loc[i, 'mW'] = Cepheids.loc[i, 'mW']
-
-        \
-
-
-            m * Cepheids.loc[i, 'logP'] + c
-    for i in range(len(Cepheids_anchors)):
+        Cepheids.loc[i, 'mW'] = Cepheids.loc[i, 'mW'] \
+                              + (m * Cepheids.loc[i, 'logP'] + c) * Cepheids.loc[i,'z'] * Cepheids.loc[i,'V-I'] \
+                              - 0.105 * Cepheids.loc[i,'z'] * Cepheids.loc[i,'V-I'] # For F99 redshift law
+    for i in Cepheids_anchors.index:
         m, c = interpolate(Cepheids_anchors.loc[i, 'z'], z_ref, m_ref, c_ref)
-        Cepheids_anchors.loc[i, 'logP'] = m * Cepheids_anchors.loc[i, 'logP'] + c
+        Cepheids_anchors.loc[i, 'mW'] = Cepheids_anchors.loc[i, 'mW'] \
+                              + (m * Cepheids_anchors.loc[i, 'logP'] + c) * Cepheids_anchors.loc[i,'z'] * Cepheids_anchors.loc[i,'V-I'] \
+                              - 0.105 * Cepheids_anchors.loc[i,'z'] * Cepheids_anchors.loc[i,'V-I'] # For F99 redshift law
 
     if Fp.include_MW == True:
         Cepheids_MW = DF_dict['Cepheids_MW']
-        for i in range(len(Cepheids_MW)):
+        for i in Cepheids_MW.index:
             m, c = interpolate(Cepheids_MW.loc[i, 'z'], z_ref, m_ref, c_ref)
-            Cepheids_MW.loc[i, 'logP'] = m * Cepheids_MW.loc[i, 'logP'] + c
+            Cepheids_MW.loc[i, 'MW'] = Cepheids_MW.loc[i, 'mW'] \
+                              + (m * Cepheids_MW.loc[i, 'logP'] + c) * Cepheids_MW.loc[i,'z'] * Cepheids_MW.loc[i,'V-I'] \
+                              - 0.105 * Cepheids_MW.loc[i,'z'] * Cepheids_MW.loc[i,'V-I'] # For F99 redshift law
 
+    return DF_dict
+
+def K_corr_TRGB(DF_dict, filter='I'):
+    '''
+    Return the corrected the DF_dict for the TRGB K-corrections following the methodology from Anderson (2021)
+
+    :type   DF_dict: dictionary of pandas DataFrame
+    :param  DF_dict: Dictionary that contains the DataFrame that will be fitted.
+    :type   filter: string
+    :param  filter: filter in which the K-corrections have to be applied, by default the I-band (F814W)
+    '''
+    # Parameters from Anderson (2021)
+    if filter == 'V':
+        a, b = -0.0012, -4.1162
+    elif filter == 'I':
+        a, b = -0.0004, -1.4075
+    elif filter == 'H':
+        a, b = 0.0001, -1.6241
+    else:
+        print('Error, choose a filter in which the Cepheids K-corrections is available !')
+        return
+
+    # Load the different DataFrames
+    TRGB = DF_dict['TRGB']
+    TRGB_anchors = DF_dict['TRGB_anchors']
+
+    # Apply the correction:
+    for i in TRGB.index:
+        TRGB.loc[i,'m'] = TRGB.loc[i,'m'] \
+                        + (a + b * TRGB.loc[i,'z']) * TRGB.loc[i,'z'] * TRGB.loc[i,'V-I']
+    for i in TRGB_anchors.index:
+        TRGB_anchors.loc[i,'m'] = TRGB_anchors.loc[i,'m'] \
+                                + (a + b * TRGB_anchors.loc[i,'z']) * TRGB_anchors.loc[i,'z'] * TRGB_anchors.loc[i,'V-I']
     return DF_dict

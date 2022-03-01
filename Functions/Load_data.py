@@ -21,13 +21,13 @@ def load_data(work_dir='./'):
     if Fp.include_Cepheids==True:
         print('Loading Cepheids & Cepheids anchors...')
         DF_dict['Cepheids'] = pd.read_csv(Data_dir+'Cepheids.csv', sep=',')
-        DF_dict['Cepheids'].columns = ['Gal', 'logP', 'mW', 'sig_mW', 'M/H', 'z']
+        DF_dict['Cepheids'].columns = ['Gal', 'logP', 'mW', 'sig_mW', 'M/H', 'z', 'V-I']
         DF_dict['Cepheids_anchors'] = pd.read_csv(Data_dir + 'Cepheids_anchors.csv', sep=',')
-        DF_dict['Cepheids_anchors'].columns = ['Gal', 'logP', 'mW', 'sig_mW', 'M/H', 'z', 'mu', 'sig_mu']
+        DF_dict['Cepheids_anchors'].columns = ['Gal', 'logP', 'mW', 'sig_mW', 'M/H', 'z', 'V-I', 'mu', 'sig_mu']
         if Fp.include_MW==True:
             print('Loading MW Cepheids...')
             DF_dict['Cepheids_MW'] = pd.read_csv(Data_dir+'Cepheids_MW.csv', sep=',')
-            DF_dict['Cepheids_MW'].columns = ['Gal', 'logP', 'mW', 'sig_mW', 'M/H', 'z', 'pi', 'sig_pi']
+            DF_dict['Cepheids_MW'].columns = ['Gal', 'logP', 'mW', 'sig_mW', 'M/H', 'z', 'V-I', 'pi', 'sig_pi']
         print('Loading SNe for the Cepheids-host galaxies...')
         DF_dict['SNe_Cepheids'] = pd.read_csv(Data_dir + 'SNe_Cepheids.csv', sep=',')
         DF_dict['SNe_Cepheids'].columns = ['Gal', 'mB', 'sig_mB']

@@ -1,14 +1,16 @@
 import sys
 import Fit_parameters as Fp
+import numpy as np
 from Fitting import fit_distance_ladder
 from Load_data import load_data
-from Relativistic_corrections import RLB_correction, K_corr_Cep
+from Relativistic_corrections import RLB_correction, K_corr_Cep, K_corr_TRGB
 
 
 def main() -> int:
-    # Load the data
+    ### Load the data
     DF_dict = load_data()
 
+    ### Relativistic corrections
     # Cepheids relativistic corrections
     if Fp.include_Cepheids == True:
         if Fp.RLB_correction == True:
@@ -20,15 +22,24 @@ def main() -> int:
     # TRGB relativistic corrections
     if Fp.include_TRGB == True:
         if Fp.Kcorr_TRGB == True:
-            pass
+            print('K-correcting the TRGB...')
+            DF_dict = K_corr_TRGB(DF_dict)
 
-    # Fit
-    y, q_dict, L, chi2_reduced = fit_distance_ladder(DF_dict)
+    ### Fitting
     # Outliers rejection (Cepheids and SNe only)
-    if Fp.outlier_rejection == True:
-        pass
-    print(10**(q_dict['5logH0']/5))
-    print(chi2_reduced)
+    if (Fp.include_Cepheids == True) or (Fp.fit_aB == True):
+        if Fp.outlier_rejection == True:
+            pass
+    # Fit
+    y, q_dict, L= fit_distance_ladder(DF_dict)
+
+
+    ### Display and save results
+    # q results
+    for str in q_dict:
+        print(f'{str} : {q_dict[str]}')
+
+
     return 0
 
 if __name__ == '__main__':

@@ -51,11 +51,12 @@ def main(Cepheids_R16, SNe_R16, Cepheids_LMC_R19, Cepheids_MW_R21, work_dir='./'
     for i in Cepheids.index:
         Cepheids.loc[i, 'z'] = z_dict[Cepheids.loc[i, 'Gal']]*1e-3
     Cepheids['V-I'] = tmp['V-I']
-    Cepheids = Cepheids[~(Cepheids['Gal'] == 'M31  ')].reset_index(drop=True)  # Drop M31
+    Cepheids = Cepheids[~(Cepheids['Gal'] == 'M31')].reset_index(drop=True)  # Drop M31
     Cepheids_anchors = Cepheids[Cepheids['Gal'] == 'N4258'].reset_index(drop=True)
     Cepheids_anchors['mu'] = mu_N4258
     Cepheids_anchors['sig_mu'] = sig_mu_N4258
-    Cepheids = Cepheids[~((Cepheids['Gal'] == 'N4258') + (Cepheids['Gal'] == 'M31  '))].reset_index(drop=True)
+    Cepheids = Cepheids[~((Cepheids['Gal'] == 'N4258'))].reset_index(drop=True) # Drop N4258
+    Cepheids = Cepheids[~((Cepheids['Gal'] == 'M101') & (Cepheids['logP'] > np.log10(35)))].reset_index(drop=True) # Drop M101 Cepheids with a period > 35d
 
     # Add the R19 LMC Cepheids to the anchors
     if Cepheids_LMC_R19[-4:]=='.csv':
