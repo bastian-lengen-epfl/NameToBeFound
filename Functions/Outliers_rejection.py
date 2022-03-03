@@ -50,7 +50,7 @@ def single_kappa_clipping(DF_dict, kappa=2.7):
     ### Initialize the algorithm
     errors = np.abs(np.array(y - np.matmul(L, q)))
     std = np.std(errors)
-    worst_Cep, worst_SNe = 0 # Set to 0 if there is not both of them for the later comparison
+    worst_Cep, worst_SNe = 0, 0 # Set to 0 if there is not both of them for the later comparison
     if Fp.include_Cepheids == True:
         worst_Cep = np.max(errors[:N_Cep+N_anc+N_MW])
     if Fp.fit_aB == True:
@@ -61,22 +61,44 @@ def single_kappa_clipping(DF_dict, kappa=2.7):
     ### Start iterations
     while worst >= kappa*std:
         index_worst = list(errors).index(worst)
+        # Get the outlier in the DF_dict_outliers and delete it from the DF_dict
         if Fp.include_Cepheids == True:
             if index_worst<N_Cep:
-                DF_dict_outliers['Cepheids'] = DF_dict_outliers['Cepheids'].append(DF_dict['Cepheids'].iloc[])
-            elif index_worst<N_anc:
-                pass
-            elif ((Fp.include_MW == True) and (index_worst<N_MW)):
-                pass
+                index = index_worst
+                DF_dict_outliers['Cepheids'] = DF_dict_outliers['Cepheids']\
+                                             .append(Cepheids.iloc[index])
+                Cepheids.drop(index=index).reset_index(drop=True)
+            elif index_worst<N_Cep+N_anc:
+                index = index_worst-N_Cep
+                DF_dict_outliers['Cepheids_anchors'] = DF_dict_outliers['Cepheids_anchors']\
+                                                    .append(Cepheids_anchors.iloc[index])
+                Cepheids_anchors.drop(index=index).reset_index(drop=True)
+            elif ((Fp.include_MW == True) and (index_worst<N_Cep+N_anc+N_MW)):
+                index = index_worst-N_Cep-N_anc
+                DF_dict_outliers['Cepheids_MW'] = DF_dict_outliers['Cepheids_MW']\
+                                                .append(Cepheids_MW.iloc[index])
+                Cepheids_MW.drop(index=index).reset_index(drop=True)
         if ((Fp.fit_aB == True) and (index_worst>N_Cep+N_anc+N_MW)):
-            pass
+            offset = len(y)-N_SN
+            index = index + offset
+            DF_dict_outliers['SNe_Hubble'] = DF_dict_outliers['SNe_Hubble']\
+                                           .append(SNe_Hubble.iloc[index])
+            SNe_Hubble.drop(index=index).reset_index(drop=True)
 
+        # Re-iterate
+        y, q_dict, L = fit_distance_ladder(DF_dict)
+        q = np.array([])  # Load the q values
+        for str in q_dict:
+            q = np.append(q_dict[str][0])
 
+        errors = np.abs(np.array(y - np.matmul(L, q)))
+        std = np.std(errors)
+        worst_Cep, worst_SNe = 0, 0  # Set to 0 if there is not both of them for the later comparison
+        if Fp.include_Cepheids == True:
+            worst_Cep = np.max(errors[:N_Cep + N_anc + N_MW])
+        if Fp.fit_aB == True:
+            worst_SNe = np.max(errors[-N_SN:])
+        # Compare them
+        worst = np.max(worst_SNe, worst_Cep)
 
-
-    if errors_Cep[worst_Cep] > errors_SN[worst_SN] :
-        to_reject = 'Cep' # String to know if the worst is a SN or a Cepheid
-    else :
-        to_reject = 'SN'
-
-    # Start the iteration
+    return DF_dict, DF_dict_outliers

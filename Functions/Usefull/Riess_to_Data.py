@@ -45,7 +45,7 @@ def main(Cepheids_R16, SNe_R16, Cepheids_LMC_R19, Cepheids_MW_R21, work_dir='./'
     Cepheids['logP'] = np.log10(tmp['Per'])
     Cepheids['mW'] = tmp['F160W'] - R * tmp['V-I']
     Cepheids['sig_mW'] = tmp['sigTot']
-    Cepheids['O/H'] = tmp['[O/H]']-Z_sun
+    Cepheids['Fe/H'] = tmp['[O/H]']-Z_sun
     Cepheids['Gal'][Cepheids['Gal'] == 'M101 '] = 'M101' #Rename 'M101 ' to 'M101'
     Cepheids['Gal'][Cepheids['Gal'] == 'M31  '] = 'M31'  # Rename 'M31  ' to 'M31'
     for i in Cepheids.index:
@@ -72,7 +72,7 @@ def main(Cepheids_R16, SNe_R16, Cepheids_LMC_R19, Cepheids_MW_R21, work_dir='./'
     to_add['logP'] = tmp['logP']
     to_add['mW'] = tmp['mWH']
     to_add['sig_mW'] = tmp['e_mWH']
-    to_add['O/H'] = -0.30
+    to_add['Fe/H'] = -0.30
     to_add['z'] = z_dict['LMC']*1e-3
     to_add['V-I'] = tmp['F555Wmag']-tmp['F814Wmag']
     to_add['mu'] = mu_LMC

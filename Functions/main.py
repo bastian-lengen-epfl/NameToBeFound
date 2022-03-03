@@ -1,6 +1,5 @@
 import sys
 import Fit_parameters as Fp
-import numpy as np
 from Fitting import fit_distance_ladder
 from Load_data import load_data
 from Relativistic_corrections import RLB_correction, K_corr_Cep, K_corr_TRGB
