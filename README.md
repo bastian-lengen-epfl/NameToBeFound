@@ -88,3 +88,15 @@ For the `/Data/SNe_Hubble.csv`:
 Note that utility functions that convert data from Riess et al. (2016, 2019, 2021), Anand et al. (2021) and the Pantheon dataset in the expected format are available in the `/Functions/Usefull` folder.
 
 ## Fit
+1. Idea 1
+2. Idea 2
+
+''' Some txt '''
+
+3. Idea 3
+4. Idea 4
+
+''' Or some other text '''
+
+3. Other Idea 3
+4. Other Idea 4 
